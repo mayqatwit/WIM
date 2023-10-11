@@ -9,7 +9,7 @@ java_gui_jar_path = "WIM.jar"
 java_args = [
     "java",
     "--module-path",
-    "C:/Users/Quentyn May/Documents/javafx-sdk-19.0.2.1/lib",
+    "javafx-sdk-19.0.2.1/lib",
     "--add-modules",
     "javafx.controls,javafx.fxml",
     "-jar",
@@ -35,7 +35,7 @@ while connected:
 
     # Receive user input from the Java GUI
     user_input = java_sender_socket.recv(2048).decode('utf-8')
-    print("Message recieved from Java GUI")
+    print("Message received from Java GUI")
     
     if user_input.strip() == exit_message:
         connected = False
