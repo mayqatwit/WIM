@@ -53,7 +53,7 @@
                <children>
                   <ImageView fitHeight="72.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/W%20logo.jpg" />
+                        <Image url="@images/W%20logo.jpg" />
                      </image>
                      <VBox.margin>
                         <Insets />
@@ -74,7 +74,7 @@
                   </TextField>
                   <ImageView fitHeight="129.0" fitWidth="112.0" pickOnBounds="true" preserveRatio="true" translateX="22.0" translateY="50.0">
                      <image>
-                        <Image url="@../images/e35495597930766.png" />
+                        <Image url="@images/WimWizard.png" />
                      </image>
                      <VBox.margin>
                         <Insets />
