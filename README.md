@@ -24,5 +24,3 @@ Week of 11/5: Combining the front end with the back end
 Week of 11/12: Debugging and issue squashing
 
 Week of 11/19:  Presentation prep
-
-test edit dsfs
