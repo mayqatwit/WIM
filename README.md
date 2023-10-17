@@ -7,7 +7,7 @@ P2P connection,
 Java front end with Python back end,
 Multi-user chat room,
 
-Implementation structure:
+Implementation timeline:
 
 October:
 
