@@ -26,10 +26,6 @@ while True:
     user_data = json.dumps(users)
     cs.send(user_data.encode(ENCODE))
 
-    print(users)
-    cs.send("EXIT".encode(ENCODE))
-    print("EXIT")
-
     cs.close()
 
 
