@@ -59,6 +59,7 @@ subprocess.Popen(java_args)
 users = find_addresses(get_name(), MYPORT)
 
 print(users)
+print()
 
 # Create a socket to listen for connections from the Java GUI
 java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
