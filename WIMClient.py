@@ -1,5 +1,47 @@
+import random
 import socket
 import subprocess
+import random
+
+MYPORT = random.randint(20000,60000)
+users = []
+
+
+def find_addresses(name, my_port):
+    # Connect to the proxy server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((socket.gethostname(), 12342))
+
+    # Send port number and name to proxy server for storage
+    s.send(str(my_port).encode('utf-8'))
+    s.recv(1024)
+    s.send(name.encode('utf-8'))
+
+    # Collect all current users in server, including self
+    while True:
+        name = s.recv(1024).decode('utf-8').strip()
+        port = s.recv(1024).decode('utf-8').strip()
+        addr = s.recv(1024).decode('utf-8').strip()
+        if name == "EXIT" or port == "EXIT" or addr == "EXIT":
+            break
+        users.append((name, port, addr))
+
+    s.close()
+
+
+def get_name() -> str:
+    name_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    name_socket.bind(('localhost', 22222))
+    name_socket.listen(1)
+
+    name_sender_socket, address = name_socket.accept()
+
+    name = name_sender_socket.recv(1024).decode('utf-8').strip()
+
+    name_socket.close()
+
+    return name
+
 
 exit_message = "EXIT"
 
@@ -19,6 +61,10 @@ java_args = [
 # Run the Java GUI using subprocess
 subprocess.Popen(java_args)
 
+find_addresses(get_name(), MYPORT)
+
+print(users)
+
 # Create a socket to listen for connections from the Java GUI
 java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 java_receiver_socket.bind(('localhost', 12345))
@@ -26,9 +72,9 @@ java_receiver_socket.listen(1)
 
 connected = True
 while connected:
-    
+
     print("Waiting for Java GUI to send a message...")
-    
+
     # Accept a connection from the Java GUI
     java_sender_socket, address = java_receiver_socket.accept()
     print(f"Connected to {address}")
@@ -36,11 +82,11 @@ while connected:
     # Receive user input from the Java GUI
     user_input = java_sender_socket.recv(2048).decode('utf-8')
     print("Message received from Java GUI")
-    
+
     if user_input.strip() == exit_message:
         connected = False
         break
-        
+
     # Stores result
     result = f"{user_input}"
 
