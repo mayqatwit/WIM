@@ -4,7 +4,6 @@ import subprocess
 import random
 
 MYPORT = random.randint(20000,60000)
-users = []
 
 
 def find_addresses(name, my_port):
@@ -38,6 +37,14 @@ def get_name() -> str:
     return name
 
 
+def send_message():
+    pass
+
+
+def receive_message():
+    pass
+
+
 exit_message = "EXIT"
 
 java_gui_jar_path = "WIM.jar"
@@ -59,7 +66,6 @@ subprocess.Popen(java_args)
 users = find_addresses(get_name(), MYPORT)
 
 print(users)
-print()
 
 # Create a socket to listen for connections from the Java GUI
 java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
