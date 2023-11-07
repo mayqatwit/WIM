@@ -1,4 +1,4 @@
-import random
+import json
 import socket
 import subprocess
 import random
@@ -18,15 +18,10 @@ def find_addresses(name, my_port):
     s.send(name.encode('utf-8'))
 
     # Collect all current users in server, including self
-    while True:
-        name = s.recv(1024).decode('utf-8').strip()
-        port = s.recv(1024).decode('utf-8').strip()
-        addr = s.recv(1024).decode('utf-8').strip()
-        if name == "EXIT" or port == "EXIT" or addr == "EXIT":
-            break
-        users.append((name, port, addr))
+    user_data = s.recv(4096).decode('utf-8').strip()
 
     s.close()
+    return json.loads(user_data)
 
 
 def get_name() -> str:
@@ -61,7 +56,7 @@ java_args = [
 # Run the Java GUI using subprocess
 subprocess.Popen(java_args)
 
-find_addresses(get_name(), MYPORT)
+users = find_addresses(get_name(), MYPORT)
 
 print(users)
 

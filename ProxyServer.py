@@ -1,3 +1,4 @@
+import json
 import socket
 
 PORT = 12342
@@ -14,20 +15,20 @@ while True:
     cs, addr = s.accept()
 
     # Collect the name and the port number of the new user
-    port = cs.recv(1024).decode('utf-8').strip()
-    cs.send(port.encode('utf-8'))
-    name = cs.recv(1024).decode('utf-8').strip()
+    port = cs.recv(2048).decode(ENCODE).strip()
+    cs.send(port.encode(ENCODE))
+    name = cs.recv(2048).decode(ENCODE).strip()
 
-    # Add the new users information to the collection of current users
-    users.append((name, port, addr))
+    # Add the new user's information to the collection of current users
+    users.append([name, int(port), addr[0]])
 
-    # Send all the current user data to the new user, so they can communicate with everyone
-    for user in users:
-        cs.send(user[0].encode('utf-8'))
-        cs.send(user[1].encode('utf-8'))
-        cs.send(user[2][0].encode('utf-8'))
+    # Serialize the user data and send it to the new user
+    user_data = json.dumps(users)
+    cs.send(user_data.encode(ENCODE))
 
-    cs.send("EXIT".encode('utf-8'))
+    print(users)
+    cs.send("EXIT".encode(ENCODE))
+    print("EXIT")
 
     cs.close()
 
