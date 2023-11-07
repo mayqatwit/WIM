@@ -39,7 +39,7 @@ def get_name() -> str:
 
 def send_message(message):
     for user in users:
-        if user[0] == name:
+        if user[0] == name and user[1] == MYPORT:
             pass
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -84,7 +84,7 @@ java_receiver_socket.bind(('localhost', 12345))
 java_receiver_socket.listen(1)
 
 listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-listener.bind((localhost, MYPORT))
+listener.bind(('localhost', MYPORT))
 listener.listen(30)
 
 connected = True
