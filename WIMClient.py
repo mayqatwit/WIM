@@ -48,10 +48,11 @@ def send_message(message):
             s.sendall(message.encode('utf-8'))
 
 
-def receive_message():
+def receive_message(listener):
 
 
-    pass
+
+    return
 
 
 exit_message = "EXIT"
@@ -81,6 +82,10 @@ print(users)
 java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 java_receiver_socket.bind(('localhost', 12345))
 java_receiver_socket.listen(1)
+
+listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listener.bind((localhost, MYPORT))
+listener.listen(30)
 
 connected = True
 while connected:
@@ -113,3 +118,4 @@ while connected:
 
 # Close the receiver socket
 java_receiver_socket.close()
+listener.close()
