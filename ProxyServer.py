@@ -16,7 +16,7 @@ while True:
 
     # Collect the name and the port number of the new user
     port = cs.recv(2048).decode(ENCODE).strip()
-    cs.send(port.encode(ENCODE))
+    cs.sendall(port.encode(ENCODE))
     name = cs.recv(2048).decode(ENCODE).strip()
 
     # Add the new user's information to the collection of current users
@@ -24,7 +24,7 @@ while True:
 
     # Serialize the user data and send it to the new user
     user_data = json.dumps(users)
-    cs.send(user_data.encode(ENCODE))
+    cs.sendall(user_data.encode(ENCODE))
 
     cs.close()
 

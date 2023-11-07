@@ -12,9 +12,9 @@ def find_addresses(name, my_port):
     s.connect((socket.gethostname(), 12342))
 
     # Send port number and name to proxy server for storage
-    s.send(str(my_port).encode('utf-8'))
+    s.sendall(str(my_port).encode('utf-8'))
     s.recv(1024)
-    s.send(name.encode('utf-8'))
+    s.sendall(name.encode('utf-8'))
 
     # Collect all current users in server, including self
     user_data = s.recv(4096).decode('utf-8').strip()
@@ -37,11 +37,20 @@ def get_name() -> str:
     return name
 
 
-def send_message():
-    pass
+def send_message(message):
+    for user in users:
+        if user[0] == name:
+            pass
+        else:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((user[2], user[1]))
+
+            s.sendall(message.encode('utf-8'))
 
 
 def receive_message():
+
+
     pass
 
 
@@ -63,7 +72,8 @@ java_args = [
 # Run the Java GUI using subprocess
 subprocess.Popen(java_args)
 
-users = find_addresses(get_name(), MYPORT)
+name = get_name()
+users = find_addresses(name, MYPORT)
 
 print(users)
 
@@ -91,6 +101,8 @@ while connected:
 
     # Stores result
     result = f"{user_input}"
+
+    send_message(result)
 
     # Send the result back to the Java GUI
     java_sender_socket.send(result.encode())
