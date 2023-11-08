@@ -9,6 +9,7 @@ MYPORT = random.randint(20000, 60000)
 exit_message = "EXIT"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
+terminate_thread = False
 
 # The Java module path and modules for the .jar file
 java_args = [
@@ -55,7 +56,8 @@ def find_addresses(name, my_port) -> list:
 
 def send_message(message):
     for user in users:
-        if user[0] == screen_name and user[1] == MYPORT:
+        print("sending")
+        if user[2] == '10.220.90.135':
             pass
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,16 +71,20 @@ def listen_for_users():
     listener.bind(('localhost', MYPORT))
     listener.listen(30)
 
-    while True:
+    while not terminate_thread:
+        print("listening")
         new_client, addr = listener.accept()
 
         client_thread = threading.Thread(target=handle_client, args=(new_client, addr))
+        client_thread.daemon = True
         client_thread.start()
 
 
 def handle_client(client, address):
-    while True:
+    while not terminate_thread:
+        print("Handling")
         incoming_message = client.accept(2048).decode(ENCODE)
+        java_sender_socket.send(incoming_message.encode())
 
 
 if __name__ == '__main__':
@@ -96,7 +102,7 @@ if __name__ == '__main__':
 
     # Start a thread to listen for new clients sending messages
     listener_thread = threading.Thread(target=listen_for_users)
-    listener_thread.start()
+    #listener_thread.start()
 
     connected = True
     while connected:
@@ -113,7 +119,6 @@ if __name__ == '__main__':
 
         if user_input.strip() == exit_message:
             connected = False
-            break
 
         # Stores result
         result = f"{user_input}"
@@ -129,3 +134,6 @@ if __name__ == '__main__':
 
     # Close the receiver socket
     java_receiver_socket.close()
+    #terminate_thread = True
+    #listener_thread.join()
+    exit(2)
