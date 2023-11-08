@@ -8,6 +8,7 @@ MYPORT = random.randint(20000, 60000)
 
 exit_message = "EXIT"
 java_gui_jar_path = "WIM.jar"
+ENCODE = 'utf-8'
 
 # The Java module path and modules for the .jar file
 java_args = [
@@ -28,25 +29,25 @@ def get_name() -> str:
 
     name_sender_socket = name_socket.accept()
 
-    found_name = name_sender_socket[0].recv(1024).decode('utf-8').strip()
+    found_name = name_sender_socket[0].recv(1024).decode(ENCODE).strip()
 
     name_socket.close()
 
     return found_name
 
 
-def find_addresses(name, my_port):
+def find_addresses(name, my_port) -> list:
     # Connect to the proxy server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((socket.gethostname(), 12342))
 
     # Send port number and name to proxy server for storage
-    s.sendall(str(my_port).encode('utf-8'))
+    s.sendall(str(my_port).encode(ENCODE))
     s.recv(1024)
-    s.sendall(name.encode('utf-8'))
+    s.sendall(name.encode(ENCODE))
 
     # Collect all current users in server, including self
-    user_data = s.recv(4096).decode('utf-8').strip()
+    user_data = s.recv(4096).decode(ENCODE).strip()
 
     s.close()
     return json.loads(user_data)
@@ -60,13 +61,24 @@ def send_message(message):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
 
-            s.sendall(message.encode('utf-8'))
+            s.sendall(message.encode(ENCODE))
 
 
 def listen_for_users():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind(('localhost', MYPORT))
     listener.listen(30)
+
+    while True:
+        new_client, addr = listener.accept()
+
+        client_thread = threading.Thread(target=handle_client, args=(new_client, addr))
+        client_thread.start()
+
+
+def handle_client(client, address):
+    while True:
+        incoming_message = client.accept(2048).decode(ENCODE)
 
 
 if __name__ == '__main__':
@@ -96,7 +108,7 @@ if __name__ == '__main__':
         print(f"Connected to {address}")
 
         # Receive user input from the Java GUI
-        user_input = java_sender_socket.recv(2048).decode('utf-8')
+        user_input = java_sender_socket.recv(2048).decode(ENCODE)
         print("Message received from Java GUI")
 
         if user_input.strip() == exit_message:
