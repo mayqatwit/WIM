@@ -1,10 +1,18 @@
 import json
 import socket
+import threading
 
 PORT = 12342
 ENCODE = 'utf-8'
 
 users = []
+
+
+def remove_client(address):
+    for user in users:
+        if user[2] == address[0]:
+            pass
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', PORT))
@@ -16,6 +24,8 @@ while True:
 
     # Collect the name and the port number of the new user
     port = cs.recv(2048).decode(ENCODE).strip()
+    # if port == "REMOVE":
+    #     remove_client(addr)
     cs.sendall(port.encode(ENCODE))
     name = cs.recv(2048).decode(ENCODE).strip()
 
@@ -27,6 +37,5 @@ while True:
     cs.sendall(user_data.encode(ENCODE))
 
     cs.close()
-
 
 s.close()

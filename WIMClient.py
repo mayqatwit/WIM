@@ -4,13 +4,14 @@ import subprocess
 import random
 import threading
 import multiprocessing
+from multiprocessing import Process
 
 MYPORT = random.randint(20000, 60000)
 
 exit_message = "EXIT"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
-terminate_thread = False
+terminate_process = False
 
 # The Java module path and modules for the .jar file
 java_args = [
@@ -59,19 +60,23 @@ def send_message(message):
     for user in users:
         print("sending")
         if user[2] == '10.220.90.135':
-            pass
+            java_sender_socket.send(message.encode())
+            print("Message sent to Java GUI\n")
+
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
 
             s.sendall(message.encode(ENCODE))
+            print("Message sent to user")
 
 
 def handle_client(client, address):
-    while not terminate_thread:
+    while not terminate_process:
         print("Handling")
         incoming_message = client.accept(2048).decode(ENCODE)
         java_sender_socket.send(incoming_message.encode())
+
 
 def listen_for_users():
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -106,7 +111,7 @@ if __name__ == '__main__':
 
     listener_process = Process(target=listen_for_users)
     listener_process.start()
-    listener_process.join()
+    #listener_process.join()
 
     connected = True
     while connected:
@@ -129,15 +134,12 @@ if __name__ == '__main__':
 
         send_message(result)
 
-        # Send the result back to the Java GUI
-        java_sender_socket.send(result.encode())
-        print("Message sent to Java GUI\n")
-
         # Close the sender socket
         java_sender_socket.close()
 
     # Close the receiver socket
     java_receiver_socket.close()
-    #terminate_thread = True
-    listener_process.close()
+    listener_process.join()
+
+    listener_process.terminate()
     exit(2)
