@@ -3,6 +3,7 @@ import socket
 import subprocess
 import random
 import threading
+import multiprocessing
 
 MYPORT = random.randint(20000, 60000)
 
@@ -66,25 +67,24 @@ def send_message(message):
             s.sendall(message.encode(ENCODE))
 
 
-def listen_for_users():
-    listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listener.bind(('localhost', MYPORT))
-    listener.listen(30)
-
-    while not terminate_thread:
-        print("listening")
-        new_client, addr = listener.accept()
-
-        client_thread = threading.Thread(target=handle_client, args=(new_client, addr))
-        client_thread.daemon = True
-        client_thread.start()
-
-
 def handle_client(client, address):
     while not terminate_thread:
         print("Handling")
         incoming_message = client.accept(2048).decode(ENCODE)
         java_sender_socket.send(incoming_message.encode())
+
+def listen_for_users():
+    listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listener.bind(('localhost', MYPORT))
+    listener.listen(30)
+
+    while not terminate_process:
+        print("listening")
+        new_client, addr = listener.accept()
+
+        client_process = Process(target=handle_client, args=(new_client, addr))
+        client_process.start()
+        client_process.join()
 
 
 if __name__ == '__main__':
@@ -101,8 +101,12 @@ if __name__ == '__main__':
     java_receiver_socket.listen(1)
 
     # Start a thread to listen for new clients sending messages
-    listener_thread = threading.Thread(target=listen_for_users)
+    #listener_thread = threading.Thread(target=listen_for_users)
     #listener_thread.start()
+
+    listener_process = Process(target=listen_for_users)
+    listener_process.start()
+    listener_process.join()
 
     connected = True
     while connected:
@@ -135,5 +139,5 @@ if __name__ == '__main__':
     # Close the receiver socket
     java_receiver_socket.close()
     #terminate_thread = True
-    #listener_thread.join()
+    listener_process.close()
     exit(2)
