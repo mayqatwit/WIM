@@ -2,8 +2,6 @@ import json
 import socket
 import subprocess
 import random
-import threading
-import multiprocessing
 from multiprocessing import Process
 
 MYPORT = random.randint(20000, 60000)
@@ -84,7 +82,6 @@ def listen_for_users():
     listener.listen(30)
 
     while not terminate_process:
-        print("listening")
         new_client, addr = listener.accept()
 
         client_process = Process(target=handle_client, args=(new_client, addr))
@@ -106,12 +103,12 @@ if __name__ == '__main__':
     java_receiver_socket.listen(1)
 
     # Start a thread to listen for new clients sending messages
-    #listener_thread = threading.Thread(target=listen_for_users)
-    #listener_thread.start()
+    # listener_thread = threading.Thread(target=listen_for_users)
+    # listener_thread.start()
 
     listener_process = Process(target=listen_for_users)
     listener_process.start()
-    #listener_process.join()
+    # listener_process.join()
 
     connected = True
     while connected:
@@ -128,6 +125,7 @@ if __name__ == '__main__':
 
         if user_input.strip() == exit_message:
             connected = False
+            break
 
         # Stores result
         result = f"{user_input}"
@@ -139,7 +137,7 @@ if __name__ == '__main__':
 
     # Close the receiver socket
     java_receiver_socket.close()
-    listener_process.join()
+    listener_process.join(0.1)
 
     listener_process.terminate()
     exit(2)

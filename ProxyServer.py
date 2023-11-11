@@ -1,6 +1,5 @@
 import json
 import socket
-import threading
 
 PORT = 12342
 ENCODE = 'utf-8'
