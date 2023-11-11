@@ -57,7 +57,7 @@ def find_addresses(name, my_port) -> list:
 def send_message(message):
     for user in users:
         print("sending")
-        if user[2] == '10.220.90.135':
+        if user[2] == socket.gethostbyname(socket.gethostname()):
             java_sender_socket.send(message.encode())
             print("Message sent to Java GUI\n")
 
@@ -87,6 +87,10 @@ def listen_for_users():
         client_process = Process(target=handle_client, args=(new_client, addr))
         client_process.start()
         client_process.join()
+
+
+def remove_from_proxy():
+    pass
 
 
 if __name__ == '__main__':
@@ -140,4 +144,5 @@ if __name__ == '__main__':
     listener_process.join(0.1)
 
     listener_process.terminate()
+
     exit(2)
