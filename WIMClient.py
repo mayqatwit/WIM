@@ -24,12 +24,14 @@ java_args = [
 
 
 def get_name() -> str:
+    # Connect to the Java GUI
     name_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     name_socket.bind(('localhost', 22222))
     name_socket.listen(1)
 
     name_sender_socket = name_socket.accept()
 
+    # Accept the name from the Java GUI
     found_name = name_sender_socket[0].recv(1024).decode(ENCODE).strip()
 
     name_socket.close()
@@ -55,12 +57,16 @@ def find_addresses(name, my_port) -> list:
 
 
 def send_message(message):
+
+    # Iterate through the list of current users
     for user in users:
         print("sending")
+        # Send to the java sender socket if sending a message to yourself
         if user[2] == socket.gethostbyname(socket.gethostname()):
             java_sender_socket.send(message.encode())
             print("Message sent to Java GUI\n")
 
+        # Send the message to all of the users
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
@@ -72,25 +78,39 @@ def send_message(message):
 def handle_client(client, address):
     while not terminate_process:
         print("Handling")
+        # Accept the message being sent
         incoming_message = client.accept(2048).decode(ENCODE)
+        # Give the message to the Java GUI
         java_sender_socket.send(incoming_message.encode())
 
 
 def listen_for_users():
+    # Wait for new user to send a message
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind(('localhost', MYPORT))
     listener.listen(30)
 
     while not terminate_process:
+        # Accept new user
         new_client, addr = listener.accept()
 
+        # Create a new process to handle this new client
         client_process = Process(target=handle_client, args=(new_client, addr))
         client_process.start()
         client_process.join()
 
 
 def remove_from_proxy():
-    pass
+    # Connect to the proxy server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((socket.gethostname(), 12342))
+
+    # Send remove message
+    s.sendall("REMOVE".encode(ENCODE))
+    # Wait for a response
+    s.recv(1024)
+    # Send screen name to the server
+    s.sendall(screen_name.encode(ENCODE))
 
 
 if __name__ == '__main__':
@@ -129,7 +149,7 @@ if __name__ == '__main__':
 
         if user_input.strip() == exit_message:
             connected = False
-            break
+            remove_from_proxy()
 
         # Stores result
         result = f"{user_input}"
@@ -139,7 +159,7 @@ if __name__ == '__main__':
         # Close the sender socket
         java_sender_socket.close()
 
-    # Close the receiver socket
+    # Close the receiver socket and listener process
     java_receiver_socket.close()
     listener_process.join(0.1)
 
