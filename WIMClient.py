@@ -66,7 +66,7 @@ def send_message(message):
             java_sender_socket.send(message.encode())
             print("Message sent to Java GUI\n")
 
-        # Send the message to all of the users
+        # Send the message to all the users
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
@@ -75,13 +75,20 @@ def send_message(message):
             print("Message sent to user")
 
 
-def handle_client(client, address):
+def handle_client(client, addr):
     while not terminate_process:
         print("Handling")
         # Accept the message being sent
         incoming_message = client.accept(2048).decode(ENCODE)
-        # Give the message to the Java GUI
-        java_sender_socket.send(incoming_message.encode())
+        if incoming_message != exit_message:
+            # Give the message to the Java GUI
+            java_sender_socket.send(incoming_message.encode())
+        else:
+            for user in users:
+                if user[2] == addr[0]:
+                    users.remove(user)
+            break
+    print("Not handling client anymore")
 
 
 def listen_for_users():
@@ -97,7 +104,6 @@ def listen_for_users():
         # Create a new process to handle this new client
         client_process = Process(target=handle_client, args=(new_client, addr))
         client_process.start()
-        client_process.join()
 
 
 def remove_from_proxy():
@@ -117,22 +123,17 @@ if __name__ == '__main__':
     # Run the Java GUI using subprocess
     subprocess.Popen(java_args)
 
-    screen_name = get_name()
-    users = find_addresses(screen_name, MYPORT)
-    print(users)
-
     # Create a socket to listen for connections from the Java GUI
     java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     java_receiver_socket.bind(('localhost', 12345))
     java_receiver_socket.listen(1)
 
-    # Start a thread to listen for new clients sending messages
-    # listener_thread = threading.Thread(target=listen_for_users)
-    # listener_thread.start()
+    screen_name = get_name()
+    users = find_addresses(screen_name, MYPORT)
+    print(users)
 
     listener_process = Process(target=listen_for_users)
     listener_process.start()
-    # listener_process.join()
 
     connected = True
     while connected:
@@ -151,10 +152,8 @@ if __name__ == '__main__':
             connected = False
             remove_from_proxy()
 
-        # Stores result
-        result = f"{user_input}"
-
-        send_message(result)
+        # Send the message out to users
+        send_message(user_input)
 
         # Close the sender socket
         java_sender_socket.close()
