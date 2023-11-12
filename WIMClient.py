@@ -9,7 +9,7 @@ MYPORT = random.randint(20000, 60000)
 exit_message = "EXIT"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
-terminate_process = False
+java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # The Java module path and modules for the .jar file
 java_args = [
@@ -57,32 +57,37 @@ def find_addresses(name, my_port) -> list:
 
 
 def send_message(message):
-
     # Iterate through the list of current users
     for user in users:
         print("sending")
         # Send to the java sender socket if sending a message to yourself
         if user[2] == socket.gethostbyname(socket.gethostname()):
-            java_sender_socket.send(message.encode())
+            java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            java_sender_socket.connect(('localhost', 10000))
+            java_sender_socket.sendall(message.encode())
+            java_sender_socket.sendall(screen_name.encode())
+            java_sender_socket.close()
             print("Message sent to Java GUI\n")
-
-        # Send the message to all the users
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
-
-            s.sendall(message.encode(ENCODE))
+            s.sendall(message.encode())
+            s.sendall(user[0].encode())
             print("Message sent to user")
+            s.close()  # Close the socket after sending the message
 
 
 def handle_client(client, addr):
-    while not terminate_process:
+    while True:
         print("Handling")
         # Accept the message being sent
         incoming_message = client.accept(2048).decode(ENCODE)
         if incoming_message != exit_message:
             # Give the message to the Java GUI
+            java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            java_sender_socket.connect(('localhost', 10000))
             java_sender_socket.send(incoming_message.encode())
+            # Do not close java_sender_socket here
         else:
             for user in users:
                 if user[2] == addr[0]:
@@ -97,7 +102,7 @@ def listen_for_users():
     listener.bind(('localhost', MYPORT))
     listener.listen(30)
 
-    while not terminate_process:
+    while True:
         # Accept new user
         new_client, addr = listener.accept()
 
@@ -141,11 +146,11 @@ if __name__ == '__main__':
         print("Waiting for Java GUI to send a message...")
 
         # Accept a connection from the Java GUI
-        java_sender_socket, address = java_receiver_socket.accept()
+        js, address = java_receiver_socket.accept()
         print(f"Connected to {address}")
 
         # Receive user input from the Java GUI
-        user_input = java_sender_socket.recv(2048).decode(ENCODE)
+        user_input = js.recv(2048).decode(ENCODE)
         print("Message received from Java GUI")
 
         if user_input.strip() == exit_message:
@@ -156,7 +161,7 @@ if __name__ == '__main__':
         send_message(user_input)
 
         # Close the sender socket
-        java_sender_socket.close()
+        js.close()
 
     # Close the receiver socket and listener process
     java_receiver_socket.close()

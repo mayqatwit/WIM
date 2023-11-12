@@ -29,12 +29,12 @@ while True:
         cs.sendall("a".encode(ENCODE))
         name = cs.recv(2048).decode(ENCODE).strip()
         remove_client(name, addr)
-    else:  # Recieve information from user and add it to the list and give them the list of users
+    else:  # Receive information from user and add it to the list and give them the list of users
         cs.sendall(port.encode(ENCODE))
         name = cs.recv(2048).decode(ENCODE).strip()
 
         # Add the new user's information to the collection of current users
-        users.append([name, int(port), addr[0]])
+        users.append([name, int(port), addr[0]])  # [Name, port #, IP#]
 
         # Serialize the user data and send it to the new user
         user_data = json.dumps(users)
