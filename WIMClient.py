@@ -6,7 +6,7 @@ from multiprocessing import Process
 
 MYPORT = random.randint(20000, 60000)
 
-exit_message = "EXIT"
+exit_message = "☻♥♦♣♠•◘○◙"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
 java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,13 +62,17 @@ def send_message(message):
         print("sending")
         # Send to the java sender socket if sending a message to yourself
         if user[2] == socket.gethostbyname(socket.gethostname()):
+            # Connect to the java socket listening for messages to be displayed
             java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            java_sender_socket.connect(('localhost', 10000))
+            java_sender_socket.connect(('localhost', 65535))
+
+            # Send message and name for the Java GUI to display
             java_sender_socket.sendall(message.encode())
             java_sender_socket.sendall(screen_name.encode())
             java_sender_socket.close()
             print("Message sent to Java GUI\n")
         else:
+            # Connect to user socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((user[2], user[1]))
             s.sendall(message.encode())
@@ -78,6 +82,14 @@ def send_message(message):
 
 
 def handle_client(client, addr):
+    name = "notfound"
+    while name == "notfound":
+        for user in users:
+            if user[2] == addr[0]:
+                name = user[0]
+        remove_from_proxy()
+        users = find_addresses(screen_name, MYPORT)
+
     while True:
         print("Handling")
         # Accept the message being sent
@@ -85,10 +97,13 @@ def handle_client(client, addr):
         if incoming_message != exit_message:
             # Give the message to the Java GUI
             java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            java_sender_socket.connect(('localhost', 10000))
+            java_sender_socket.connect(('localhost', 65535))
             java_sender_socket.send(incoming_message.encode())
-            # Do not close java_sender_socket here
+            java_sender_socket.send(name.encode())
+
+
         else:
+            # Remove user that has requested to leave
             for user in users:
                 if user[2] == addr[0]:
                     users.remove(user)

@@ -41,5 +41,6 @@ while True:
         cs.sendall(user_data.encode(ENCODE))
 
     cs.close()
+    print(users)
 
 s.close()
