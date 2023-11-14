@@ -101,7 +101,6 @@ def handle_client(client, addr):
             java_sender_socket.send(incoming_message.encode())
             java_sender_socket.send(name.encode())
 
-
         else:
             # Remove user that has requested to leave
             for user in users:
@@ -171,6 +170,10 @@ if __name__ == '__main__':
         if user_input.strip() == exit_message:
             connected = False
             remove_from_proxy()
+
+        remove_from_proxy()
+        users = find_addresses(screen_name, MYPORT)
+        print(users)
 
         # Send the message out to users
         send_message(user_input)
