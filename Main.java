@@ -5,10 +5,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -38,7 +41,22 @@ public class Main extends Application implements Initializable {
 	Button exitButton;
 	String name;
 
+	class MultithreadingDemo extends Thread {
+	    public void run()
+	    {
+	        try {
+	           receiveMessages();
+	        }
+	        catch (Exception e) {
+	            // Throwing an exception
+	            System.out.println(e);
+	            System.out.println("Error in thread");
+	        }
+	    }
+	}
+
 	public static void main(String[] args) {
+
 		launch(args);
 
 	}
@@ -58,6 +76,9 @@ public class Main extends Application implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		MultithreadingDemo object
+        = new MultithreadingDemo();
+    object.start();
 
 		enterName.setOnKeyPressed((e) -> {
 
@@ -66,6 +87,14 @@ public class Main extends Application implements Initializable {
 				if (name != null) { // Make sure they entered a name
 					if (name.length() < 16) { // Name is <= 15 characters
 						enterName.setDisable(true);
+						try {
+							Socket socket = new Socket("localhost", 22222);
+							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+							out.println(name);
+							socket.close();
+						} catch (IOException e1) {
+						}
+
 					} else { // Error message for name being too long
 						Text t = new Text(String.format("Please make your screen name less than 15 characters%n"));
 						t.setFill(Color.RED);
@@ -94,14 +123,14 @@ public class Main extends Application implements Initializable {
 							// Send the user input to the Python script
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 							out.println(message);
-
-							// Receive the result from the Python script
-							BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-							String result = in.readLine();
-
-							// Display the message from the Python script
-							displayText.getChildren()
-									.add(new Text(String.format("[%s] %s: %s%n", getTime(), name, result)));
+//
+//							// Receive the result from the Python script
+//							BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//							String result = in.readLine();
+//
+//							// Display the message from the Python script
+//							displayText.getChildren()
+//									.add(new Text(String.format("[%s] %s: %s%n", getTime(), name, result)));
 
 							// Close the socket
 							socket.close();
@@ -123,7 +152,7 @@ public class Main extends Application implements Initializable {
 			try {
 				Socket socket = new Socket("localhost", 12345);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				out.println("EXIT");
+				out.println("☻♥♦♣♠•◘○◙");
 				socket.close();
 				System.exit(0);
 			} catch (IOException e1) {
@@ -134,7 +163,7 @@ public class Main extends Application implements Initializable {
 
 	/**
 	 * Method to return the current time in HH:MM:SS format
-	 * 
+	 *
 	 * @return string time in HH:MM:SS format
 	 */
 	public static String getTime() {
@@ -143,5 +172,26 @@ public class Main extends Application implements Initializable {
 
 		return s[3];
 
+	}
+
+	public void receiveMessages() throws UnknownHostException, IOException {
+		ServerSocket serverSocket = new ServerSocket( 65535 );
+
+		while (true) {
+			System.out.println("Wating for new message");
+
+			// Receive the result from the Python script
+			Socket listen = serverSocket.accept();
+			BufferedReader in = new BufferedReader(new InputStreamReader(listen.getInputStream()));
+			String message = in.readLine();
+			String name = in.readLine();
+
+			// Display the message from the Python script
+	        Platform.runLater(() -> {
+	            displayText.getChildren().add(new Text(String.format("[%s] %s: %s%n", getTime(), name, message)));
+	        });
+			// Close the socket
+			listen.close();
+		}
 	}
 }
