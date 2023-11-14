@@ -74,6 +74,7 @@ def send_message(message):
         else:
             # Connect to user socket
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print(user[2], user[1])
             s.connect((user[2], user[1]))
             s.sendall(message.encode())
             s.sendall(user[0].encode())
@@ -120,9 +121,11 @@ def listen_for_users():
         # Accept new user
         print("listening")
         new_client, addr = listener.accept()
+        print("found user who wants to say something")
 
         # Create a new process to handle this new client
         client_process = Process(target=handle_client, args=(new_client, addr))
+        print("starting new process")
         client_process.start()
 
 
@@ -171,10 +174,6 @@ if __name__ == '__main__':
         if user_input.strip() == exit_message:
             connected = False
             remove_from_proxy()
-
-        remove_from_proxy()
-        users = find_addresses(screen_name, MYPORT)
-        print(users)
 
         # Send the message out to users
         send_message(user_input)
