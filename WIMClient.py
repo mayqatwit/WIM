@@ -42,7 +42,7 @@ def get_name() -> str:
 def find_addresses(name, my_port) -> list:
     # Connect to the proxy server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 12342))
+    s.connect(('10.220.90.135', 12342))
 
     # Send port number and name to proxy server for storage
     s.sendall(str(my_port).encode(ENCODE))
