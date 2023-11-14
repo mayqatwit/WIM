@@ -129,7 +129,7 @@ def listen_for_users():
 def remove_from_proxy():
     # Connect to the proxy server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 12342))
+    s.connect(('10.220.90.135', 12342))
 
     # Send remove message
     s.sendall("REMOVE".encode(ENCODE))
