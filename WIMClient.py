@@ -114,7 +114,7 @@ def handle_client(client, addr):
 def listen_for_users():
     # Wait for new user to send a message
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listener.bind(('localhost', MYPORT))
+    listener.bind(('', MYPORT))
     listener.listen(30)
 
     while True:
