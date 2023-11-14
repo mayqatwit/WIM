@@ -82,13 +82,13 @@ def send_message(message):
 
 
 def handle_client(client, addr):
-    name = "notfound"
-    while name == "notfound":
-        for user in users:
-            if user[2] == addr[0]:
-                name = user[0]
-        remove_from_proxy()
-        users = find_addresses(screen_name, MYPORT)
+    # name = "notfound"
+    # while name == "notfound":
+    for user in users:
+        if user[2] == addr[0]:
+            name = user[0]
+    #     remove_from_proxy()
+    #     users = find_addresses(screen_name, MYPORT)
 
     while True:
         print("Handling")
@@ -118,6 +118,7 @@ def listen_for_users():
 
     while True:
         # Accept new user
+        print("listening")
         new_client, addr = listener.accept()
 
         # Create a new process to handle this new client
