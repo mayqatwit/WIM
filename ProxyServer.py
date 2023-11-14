@@ -29,6 +29,8 @@ while True:
         cs.sendall("a".encode(ENCODE))
         name = cs.recv(2048).decode(ENCODE).strip()
         remove_client(name, addr)
+    elif port == "REQUEST":
+        cs.sendall(json.dumps(users).encode(ENCODE))
     else:  # Receive information from user and add it to the list and give them the list of users
         cs.sendall(port.encode(ENCODE))
         name = cs.recv(2048).decode(ENCODE).strip()

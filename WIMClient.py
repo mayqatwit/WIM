@@ -23,6 +23,16 @@ java_args = [
 ]
 
 
+def request_users():
+    # Connect to the proxy server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('10.220.90.135', 12342))
+
+    # Send request message
+    s.sendall("REQUEST".encode(ENCODE))
+    return json.loads(s.recv(2048).decode(ENCODE).strip())
+
+
 def get_name() -> str:
     # Connect to the Java GUI
     name_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
