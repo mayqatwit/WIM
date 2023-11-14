@@ -30,7 +30,7 @@ def request_users():
 
     # Send request message
     s.sendall("REQUEST".encode(ENCODE))
-    return json.loads(s.recv(2048).decode(ENCODE).strip())
+    return json.loads(s.recv(4096).decode(ENCODE))
 
 
 def get_name() -> str:
@@ -185,6 +185,8 @@ if __name__ == '__main__':
             connected = False
             remove_from_proxy()
 
+        users = request_users()
+        print(users)
         # Send the message out to users
         send_message(user_input)
 
