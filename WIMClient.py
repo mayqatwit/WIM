@@ -132,6 +132,7 @@ def listen_for_users():
         # print("starting new process")
         # client_process.start()
         handle_client(new_client, addr)
+        new_client.close()
 
 
 def remove_from_proxy():
