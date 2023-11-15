@@ -93,31 +93,25 @@ def send_message(message):
 
 
 def handle_client(client, addr):
-    # name = "notfound"
-    # while name == "notfound":
+    print("Handling")
     for user in users:
         if user[2] == addr[0]:
             name = user[0]
-    #     remove_from_proxy()
-    #     users = find_addresses(screen_name, MYPORT)
 
-    while True:
-        print("Handling")
-        # Accept the message being sent
-        incoming_message = client.accept(2048).decode(ENCODE)
-        if incoming_message != exit_message:
-            # Give the message to the Java GUI
-            java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            java_sender_socket.connect(('localhost', 65535))
-            java_sender_socket.send(incoming_message.encode())
-            java_sender_socket.send(name.encode())
+    # Accept the message being sent
+    incoming_message = client.accept(2048).decode(ENCODE)
+    if incoming_message != exit_message:
+        # Give the message to the Java GUI
+        java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        java_sender_socket.connect(('localhost', 65535))
+        java_sender_socket.send(incoming_message.encode())
+        java_sender_socket.send(name.encode())
 
-        else:
-            # Remove user that has requested to leave
-            for user in users:
-                if user[2] == addr[0]:
-                    users.remove(user)
-            break
+    else:
+        # Remove user that has requested to leave
+        for user in users:
+            if user[2] == addr[0]:
+                users.remove(user)
     print("Not handling client anymore")
 
 
@@ -134,9 +128,10 @@ def listen_for_users():
         print("found user who wants to say something")
 
         # Create a new process to handle this new client
-        client_process = Process(target=handle_client, args=(new_client, addr))
-        print("starting new process")
-        client_process.start()
+        # client_process = Process(target=handle_client, args=(new_client, addr))
+        # print("starting new process")
+        # client_process.start()
+        handle_client(new_client, addr)
 
 
 def remove_from_proxy():
