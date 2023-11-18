@@ -72,8 +72,8 @@ def send_message(message):
         # Send to the java sender socket if sending a message to yourself
         if user[2] == socket.gethostbyname(socket.gethostname()):
             # Connect to the java socket listening for messages to be displayed
-            # java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            # java_sender_socket.connect(('localhost', 65535))
+            java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            java_sender_socket.connect(('localhost', java_sender_port))
 
             # Send message and name for the Java GUI to display
             java_sender_socket.sendall(message.encode())
@@ -162,6 +162,11 @@ if __name__ == '__main__':
 
     # Run the Java GUI using subprocess
     subprocess.Popen(java_args)
+
+    js, address = java_receiver_socket.accept()
+    java_sender_port = int(js.recv(2048).decode(ENCODE))
+    js.close()
+    print(java_sender_port)
 
     try:
         screen_name = get_name()
