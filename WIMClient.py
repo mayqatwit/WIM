@@ -209,6 +209,7 @@ if __name__ == '__main__':
     listener_process.start()
 
     connected = True
+    send_message("has connected")
     while connected:
 
         print("Waiting for Java GUI to send a message...")
