@@ -149,13 +149,15 @@ def remove_from_proxy():
 
 
 if __name__ == '__main__':
-    # Run the Java GUI using subprocess
-    subprocess.Popen(java_args)
-
     # Create a socket to listen for connections from the Java GUI
     java_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    java_receiver_socket.bind(('localhost', 12345))
+    java_receiver_socket.bind(('localhost', 0))
     java_receiver_socket.listen(1)
+
+    java_args.append(str(java_receiver_socket.getsockname()[1]))
+
+    # Run the Java GUI using subprocess
+    subprocess.Popen(java_args)
 
     screen_name = get_name()
     users = find_addresses(screen_name, MYPORT)
