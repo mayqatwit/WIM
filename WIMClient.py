@@ -4,7 +4,7 @@ import subprocess
 import random
 from multiprocessing import Process
 
-MYPORT = 65111
+global MYPORT
 users = []
 java_sender_port = 0
 
@@ -122,7 +122,7 @@ def handle_client(client, addr):
     print("Not handling client anymore")
 
 
-def listen_for_users():
+def listen_for_users(MYPORT):
     # Wait for new user to send a message
     HOST = ''
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -167,7 +167,6 @@ if __name__ == '__main__':
 
     java_args.append(str(java_receiver_socket.getsockname()[1]))
     java_args.append(str(name_socket.getsockname()[1]))
-    java_args.append(str(MYPORT))
 
     # Run the Java GUI using subprocess
     subprocess.Popen(java_args)
@@ -177,16 +176,30 @@ if __name__ == '__main__':
     js.close()
     print(java_sender_port)
 
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', 0))
+
+    MYPORT = s.getsockname()[1]
+    s.close()
+    print("port:", MYPORT)
+
     try:
         screen_name = get_name()
+
+        while MYPORT == 0:
+            continue
+
         users = find_addresses(screen_name, MYPORT)
         print(users)
     except:
         print("Couldn't connect to server")
         exit(0)
 
-    listener_process = Process(target=listen_for_users)
+    listener_process = Process(target=listen_for_users, args = {MYPORT})
     listener_process.start()
+
+
 
     connected = True
     while connected:
