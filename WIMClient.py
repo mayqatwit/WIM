@@ -70,7 +70,7 @@ def send_message(message):
     for user in users:
         print("sending")
         # Send to the java sender socket if sending a message to yourself
-        if user[2] == socket.gethostbyname(socket.gethostname()):
+        if user[0] == screen_name:
             # Connect to the java socket listening for messages to be displayed
             java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             java_sender_socket.connect(('localhost', java_sender_port))
