@@ -90,7 +90,7 @@ def send_message(message):
             print(user[2], user[1])
             send.connect((user[2], user[1]))
             send.sendall(message.encode())
-            # send.sendall(user[0].encode())
+            send.sendall(user[0].encode())
             print("Message sent to user")
             send.close()  # Close the socket after sending the message
 
@@ -98,19 +98,18 @@ def send_message(message):
 def handle_client(client, addr, java_sender_port):
     users = request_users()
     print("Handling")
-    for user in users:
-        if user[2] == addr[0]:
-            other_name = user[0]
-            continue
+    # for user in users:
+    #     if user[2] == addr[0]:
+    #         other_name = user[0]
+    #         continue
 
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE).strip()
+    other_name = client.recv(2048).decode(ENCODE).strip()
     if incoming_message != exit_message:
         print(incoming_message)
 
         print(other_name, ":", incoming_message)
-
-
 
         # Connect to the java socket listening for messages to be displayed
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
