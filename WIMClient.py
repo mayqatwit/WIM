@@ -80,7 +80,7 @@ def send_message(message):
             # Send message and name for the Java GUI to display
             java_sender_socket.sendall(message.encode())
             java_sender_socket.sendall(screen_name.encode())
-            # java_sender_socket.close()
+            java_sender_socket.close()
             print("Message sent to Java GUI\n")
         else:
             # Connect to user socket
@@ -103,8 +103,8 @@ def handle_client(client, addr):
     incoming_message = client.recv(2048).decode(ENCODE)
     if incoming_message != exit_message:
         # Give the message to the Java GUI
-        # java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # java_sender_socket.connect(('localhost', 65535))
+        java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        java_sender_socket.connect(('localhost', 65535))
         java_sender_socket.send(incoming_message.encode())
         java_sender_socket.send(name.encode())
 
