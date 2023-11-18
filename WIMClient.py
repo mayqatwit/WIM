@@ -1,7 +1,6 @@
 import json
 import socket
 import subprocess
-import random
 from multiprocessing import Process
 
 global MYPORT
@@ -27,13 +26,13 @@ java_args = [
 
 def request_users():
     # Connect to the proxy server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('10.220.90.135', 12342))
+    s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s1.connect(('10.220.90.135', 12342))
 
     # Send request message
-    s.sendall("REQUEST".encode(ENCODE))
-    ret = json.loads(s.recv(4096).decode(ENCODE))
-    s.close()
+    s1.sendall("REQUEST".encode(ENCODE))
+    ret = json.loads(s1.recv(4096).decode(ENCODE))
+    s1.close()
     return ret
 
 
@@ -54,18 +53,18 @@ def get_name() -> str:
 
 def find_addresses(name, my_port) -> list:
     # Connect to the proxy server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('10.220.90.135', 12342))
+    s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s2.connect(('10.220.90.135', 12342))
 
     # Send port number and name to proxy server for storage
-    s.sendall(str(my_port).encode(ENCODE))
-    s.recv(1024)
-    s.sendall(name.encode(ENCODE))
+    s2.sendall(str(my_port).encode(ENCODE))
+    s2.recv(1024)
+    s2.sendall(name.encode(ENCODE))
 
     # Collect all current users in server, including self
-    user_data = s.recv(4096).decode(ENCODE).strip()
+    user_data = s2.recv(4096).decode(ENCODE).strip()
 
-    s.close()
+    s2.close()
     return json.loads(user_data)
 
 
@@ -80,7 +79,7 @@ def send_message(message):
             java_sender_socket.connect(('localhost', java_sender_port))
 
             # Send message and name for the Java GUI to display
-            java_sender_socket.sendall((screen_name+ ": "+message).encode())
+            java_sender_socket.sendall((screen_name + ": " + message).encode())
             java_sender_socket.close()
             print("Message sent to Java GUI\n")
         else:
@@ -94,12 +93,12 @@ def send_message(message):
             send.close()  # Close the socket after sending the message
 
 
-def handle_client(client, addr, java_sender_port):
+def handle_client(client, addr, java_sender_port, screen_name):
     users = request_users()
     print("Handling")
     other_name = ''
     for user in users:
-        if user[2] == addr[0]:
+        if user[2] == addr[0] and user[0] != screen_name:
             other_name = user[0]
             continue
 
@@ -107,7 +106,6 @@ def handle_client(client, addr, java_sender_port):
     incoming_message = client.recv(2048).decode(ENCODE).strip()
     # other_name = client.recv(2048).decode(ENCODE).strip()
     if incoming_message != exit_message:
-        print(incoming_message)
 
         print(other_name, ":", incoming_message)
 
@@ -117,7 +115,7 @@ def handle_client(client, addr, java_sender_port):
         java_sender_socket.connect(('127.0.0.1', java_sender_port))
 
         # Send message and name for the Java GUI to display
-        java_sender_socket.sendall((other_name+ ": "+incoming_message).encode())
+        java_sender_socket.sendall((other_name + ": " + incoming_message).encode())
         java_sender_socket.close()
         print("Message sent to Java GUI\n")
 
@@ -125,20 +123,25 @@ def handle_client(client, addr, java_sender_port):
         # Remove user that has requested to leave
         for user in users:
             if user[2] == addr[0]:
+                other_name = user[0]
+                java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                java_sender_socket.connect(('127.0.0.1', java_sender_port))
+                java_sender_socket.sendall((other_name + " has disconnected").encode())
+                java_sender_socket.close()
                 users.remove(user)
     print("Not handling client anymore")
 
 
-def listen_for_users(MYPORT, java_sender_port):
+def listen_for_users(MYPORT, java_sender_port, screen_name):
     # Wait for new user to send a message
-    HOST = ''
+    host = ''
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listener.bind((HOST, MYPORT))
+    listener.bind((host, MYPORT))
     listener.listen()
 
     while True:
         # Accept new user
-        print(f"Listening on {(HOST, MYPORT)}")
+        print(f"Listening on {(host, MYPORT)}")
         new_client, addr = listener.accept()
         print("found user who wants to say something")
 
@@ -146,21 +149,21 @@ def listen_for_users(MYPORT, java_sender_port):
         # client_process = Process(target=handle_client, args=(new_client, addr))
         # print("starting new process")
         # client_process.start()
-        handle_client(new_client, addr, java_sender_port)
+        handle_client(new_client, addr, java_sender_port, screen_name)
         new_client.close()
 
 
 def remove_from_proxy():
     # Connect to the proxy server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('10.220.90.135', 12342))
+    s3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s3.connect(('10.220.90.135', 12342))
 
     # Send remove message
-    s.sendall("REMOVE".encode(ENCODE))
+    s3.sendall("REMOVE".encode(ENCODE))
     # Wait for a response
-    s.recv(1024)
+    s3.recv(1024)
     # Send screen name to the server
-    s.sendall(screen_name.encode(ENCODE))
+    s3.sendall(screen_name.encode(ENCODE))
 
 
 if __name__ == '__main__':
@@ -183,7 +186,6 @@ if __name__ == '__main__':
     js.close()
     print(java_sender_port)
 
-
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('', 0))
 
@@ -203,10 +205,8 @@ if __name__ == '__main__':
         print("Couldn't connect to server")
         exit(0)
 
-    listener_process = Process(target=listen_for_users, args = (MYPORT, java_sender_port))
+    listener_process = Process(target=listen_for_users, args=(MYPORT, java_sender_port, screen_name))
     listener_process.start()
-
-
 
     connected = True
     while connected:
