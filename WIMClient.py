@@ -118,13 +118,14 @@ def handle_client(client, addr):
 
 def listen_for_users():
     # Wait for new user to send a message
+    HOST = ''
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listener.bind((socket.gethostbyname(socket.gethostname()), MYPORT))
+    listener.bind((HOST, MYPORT))
     listener.listen(30)
 
     while True:
         # Accept new user
-        print("listening")
+        print(f"Listening on {(HOST, MYPORT)}")
         new_client, addr = listener.accept()
         print("found user who wants to say something")
 
