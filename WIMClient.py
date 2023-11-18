@@ -30,7 +30,9 @@ def request_users():
 
     # Send request message
     s.sendall("REQUEST".encode(ENCODE))
-    return json.loads(s.recv(4096).decode(ENCODE))
+    ret = json.loads(s.recv(4096).decode(ENCODE))
+    s.close()
+    return ret
 
 
 def get_name() -> str:
