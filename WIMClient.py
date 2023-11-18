@@ -88,7 +88,6 @@ def send_message(message):
             print(user[2], user[1])
             send.connect((user[2], user[1]))
             send.sendall(message.encode())
-            # send.sendall(user[0].encode())
             print("Message sent to user")
             send.close()  # Close the socket after sending the message
 
@@ -104,7 +103,6 @@ def handle_client(client, addr, java_sender_port, screen_name):
 
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE).strip()
-    # other_name = client.recv(2048).decode(ENCODE).strip()
     if incoming_message != exit_message:
 
         print(other_name, ":", incoming_message)
@@ -146,9 +144,6 @@ def listen_for_users(MYPORT, java_sender_port, screen_name):
         print("found user who wants to say something")
 
         # Create a new process to handle this new client
-        # client_process = Process(target=handle_client, args=(new_client, addr))
-        # print("starting new process")
-        # client_process.start()
         handle_client(new_client, addr, java_sender_port, screen_name)
         new_client.close()
 
