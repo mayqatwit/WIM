@@ -118,8 +118,7 @@ def handle_client(client, addr, java_sender_port):
         java_sender_socket.connect(('127.0.0.1', java_sender_port))
 
         # Send message and name for the Java GUI to display
-        java_sender_socket.sendall(incoming_message.encode())
-        java_sender_socket.sendall(other_name.encode())
+        java_sender_socket.sendall((other_name+ ": "+incoming_message).encode())
         java_sender_socket.close()
         print("Message sent to Java GUI\n")
 
