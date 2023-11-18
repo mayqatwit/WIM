@@ -223,7 +223,6 @@ if __name__ == '__main__':
 
         if user_input.strip() == exit_message:
             connected = False
-            remove_from_proxy()
 
         users = request_users()
         print(users)
@@ -234,6 +233,7 @@ if __name__ == '__main__':
         js.close()
 
     # Close the receiver socket and listener process
+    remove_from_proxy()
     java_receiver_socket.close()
     listener_process.join(0.1)
 
