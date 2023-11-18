@@ -90,7 +90,7 @@ def send_message(message):
             print(user[2], user[1])
             send.connect((user[2], user[1]))
             send.sendall(message.encode())
-            send.sendall(user[0].encode())
+            # send.sendall(user[0].encode())
             print("Message sent to user")
             send.close()  # Close the socket after sending the message
 
