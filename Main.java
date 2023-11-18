@@ -41,6 +41,8 @@ public class Main extends Application implements Initializable {
 	Button exitButton;
 	String name;
 
+	public static String[] arg;
+
 	class MultithreadingDemo extends Thread {
 	    public void run()
 	    {
@@ -56,9 +58,8 @@ public class Main extends Application implements Initializable {
 	}
 
 	public static void main(String[] args) {
-
+		arg = args;
 		launch(args);
-
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class Main extends Application implements Initializable {
 					if (name.length() < 16) { // Name is <= 15 characters
 						enterName.setDisable(true);
 						try {
-							Socket socket = new Socket("localhost", 22222);
+							Socket socket = new Socket("localhost", Integer.parseInt(arg[1]));
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 							out.println(name);
 							socket.close();
@@ -175,7 +176,7 @@ public class Main extends Application implements Initializable {
 	}
 
 	public void receiveMessages() throws UnknownHostException, IOException {
-		ServerSocket serverSocket = new ServerSocket( 65535 );
+		ServerSocket serverSocket = new ServerSocket( 0 );
 
 		while (true) {
 			System.out.println("Wating for new message");

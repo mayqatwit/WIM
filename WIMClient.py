@@ -35,8 +35,7 @@ def request_users():
 
 def get_name() -> str:
     # Connect to the Java GUI
-    name_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    name_socket.bind(('localhost', 22222))
+
     name_socket.listen(1)
 
     name_sender_socket = name_socket.accept()
@@ -73,13 +72,13 @@ def send_message(message):
         # Send to the java sender socket if sending a message to yourself
         if user[2] == socket.gethostbyname(socket.gethostname()):
             # Connect to the java socket listening for messages to be displayed
-            java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            java_sender_socket.connect(('localhost', 65535))
+            # java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # java_sender_socket.connect(('localhost', 65535))
 
             # Send message and name for the Java GUI to display
             java_sender_socket.sendall(message.encode())
             java_sender_socket.sendall(screen_name.encode())
-            java_sender_socket.close()
+            # java_sender_socket.close()
             print("Message sent to Java GUI\n")
         else:
             # Connect to user socket
@@ -102,8 +101,8 @@ def handle_client(client, addr):
     incoming_message = client.accept(2048).decode(ENCODE)
     if incoming_message != exit_message:
         # Give the message to the Java GUI
-        java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        java_sender_socket.connect(('localhost', 65535))
+        # java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # java_sender_socket.connect(('localhost', 65535))
         java_sender_socket.send(incoming_message.encode())
         java_sender_socket.send(name.encode())
 
@@ -154,14 +153,23 @@ if __name__ == '__main__':
     java_receiver_socket.bind(('localhost', 0))
     java_receiver_socket.listen(1)
 
+    name_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    name_socket.bind(('localhost', 0))
+
     java_args.append(str(java_receiver_socket.getsockname()[1]))
+    java_args.append(str(name_socket.getsockname()[1]))
+    java_args.append(str(MYPORT))
 
     # Run the Java GUI using subprocess
     subprocess.Popen(java_args)
 
-    screen_name = get_name()
-    users = find_addresses(screen_name, MYPORT)
-    print(users)
+    try:
+        screen_name = get_name()
+        users = find_addresses(screen_name, MYPORT)
+        print(users)
+    except:
+        print("Couldn't connect to server")
+        exit(0)
 
     listener_process = Process(target=listen_for_users)
     listener_process.start()
