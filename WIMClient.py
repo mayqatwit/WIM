@@ -4,7 +4,9 @@ import subprocess
 import random
 from multiprocessing import Process
 
-MYPORT = random.randint(20000, 60000)
+MYPORT = 65111
+users = []
+java_sender_port = 0
 
 exit_message = "☻♥♦♣♠•◘○◙"
 java_gui_jar_path = "WIM.jar"
@@ -102,11 +104,15 @@ def handle_client(client, addr):
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE)
     if incoming_message != exit_message:
-        # Give the message to the Java GUI
+        # Connect to the java socket listening for messages to be displayed
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         java_sender_socket.connect(('localhost', java_sender_port))
-        java_sender_socket.send(incoming_message.encode())
-        java_sender_socket.send(name.encode())
+
+        # Send message and name for the Java GUI to display
+        java_sender_socket.sendall(incoming_message.encode())
+        java_sender_socket.sendall(screen_name.encode())
+        java_sender_socket.close()
+        print("Message sent to Java GUI\n")
 
     else:
         # Remove user that has requested to leave
@@ -121,7 +127,7 @@ def listen_for_users():
     HOST = ''
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind((HOST, MYPORT))
-    listener.listen(30)
+    listener.listen()
 
     while True:
         # Accept new user
