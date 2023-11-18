@@ -80,8 +80,7 @@ def send_message(message):
             java_sender_socket.connect(('localhost', java_sender_port))
 
             # Send message and name for the Java GUI to display
-            java_sender_socket.sendall(message.encode())
-            java_sender_socket.sendall(screen_name.encode())
+            java_sender_socket.sendall((other_name+ ": "+incoming_message).encode())
             java_sender_socket.close()
             print("Message sent to Java GUI\n")
         else:
