@@ -98,14 +98,15 @@ def send_message(message):
 def handle_client(client, addr, java_sender_port):
     users = request_users()
     print("Handling")
-    # for user in users:
-    #     if user[2] == addr[0]:
-    #         other_name = user[0]
-    #         continue
+    other_name = ''
+    for user in users:
+        if user[2] == addr[0]:
+            other_name = user[0]
+            continue
 
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE).strip()
-    other_name = client.recv(2048).decode(ENCODE).strip()
+    # other_name = client.recv(2048).decode(ENCODE).strip()
     if incoming_message != exit_message:
         print(incoming_message)
 
