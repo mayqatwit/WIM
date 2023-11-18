@@ -96,7 +96,9 @@ def send_message(message):
 
 
 def handle_client(client, addr):
+    users = request_users()
     print("Handling")
+    global name
     for user in users:
         if user[2] == addr[0]:
             name = user[0]
@@ -104,13 +106,16 @@ def handle_client(client, addr):
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE)
     if incoming_message != exit_message:
+        print(name, ":", incoming_message)
+
         # Connect to the java socket listening for messages to be displayed
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        java_sender_socket.connect(('localhost', java_sender_port))
+        print("java port: ", java_sender_port)
+        java_sender_socket.connect(('127.0.0.1', java_sender_port))
 
         # Send message and name for the Java GUI to display
         java_sender_socket.sendall(incoming_message.encode())
-        java_sender_socket.sendall(screen_name.encode())
+        java_sender_socket.sendall(name.encode())
         java_sender_socket.close()
         print("Message sent to Java GUI\n")
 
