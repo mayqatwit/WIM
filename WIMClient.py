@@ -104,7 +104,7 @@ def handle_client(client, addr):
     if incoming_message != exit_message:
         # Give the message to the Java GUI
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        java_sender_socket.connect(('localhost', 65535))
+        java_sender_socket.connect(('localhost', java_sender_port))
         java_sender_socket.send(incoming_message.encode())
         java_sender_socket.send(name.encode())
 
