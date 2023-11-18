@@ -90,7 +90,7 @@ def send_message(message):
             print(user[2], user[1])
             send.connect((user[2], user[1]))
             send.sendall(message.encode())
-            send.sendall(user[0].encode())
+            # send.sendall(user[0].encode())
             print("Message sent to user")
             send.close()  # Close the socket after sending the message
 
@@ -98,15 +98,17 @@ def send_message(message):
 def handle_client(client, addr, java_sender_port):
     users = request_users()
     print("Handling")
-    global name
     for user in users:
         if user[2] == addr[0]:
-            name = user[0]
+            other_name = user[0]
+            continue
 
     # Accept the message being sent
     incoming_message = client.recv(2048).decode(ENCODE)
     if incoming_message != exit_message:
-        print(name, ":", incoming_message)
+        print(other_name, ":", incoming_message)
+
+        print(incoming_message)
 
         # Connect to the java socket listening for messages to be displayed
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,7 +117,7 @@ def handle_client(client, addr, java_sender_port):
 
         # Send message and name for the Java GUI to display
         java_sender_socket.sendall(incoming_message.encode())
-        java_sender_socket.sendall(name.encode())
+        java_sender_socket.sendall(other_name.encode())
         java_sender_socket.close()
         print("Message sent to Java GUI\n")
 
