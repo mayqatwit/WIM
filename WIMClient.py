@@ -104,11 +104,13 @@ def handle_client(client, addr, java_sender_port):
             continue
 
     # Accept the message being sent
-    incoming_message = client.recv(2048).decode(ENCODE)
+    incoming_message = client.recv(2048).decode(ENCODE).strip()
     if incoming_message != exit_message:
+        print(incoming_message)
+
         print(other_name, ":", incoming_message)
 
-        print(incoming_message)
+
 
         # Connect to the java socket listening for messages to be displayed
         java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
