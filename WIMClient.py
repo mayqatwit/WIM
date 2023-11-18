@@ -201,7 +201,7 @@ if __name__ == '__main__':
         print("Couldn't connect to server")
         exit(0)
 
-    listener_process = Process(target=listen_for_users, args = {MYPORT, java_sender_port})
+    listener_process = Process(target=listen_for_users, args = (MYPORT, java_sender_port))
     listener_process.start()
 
 
