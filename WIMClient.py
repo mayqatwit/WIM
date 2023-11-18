@@ -110,6 +110,7 @@ def handle_client(client, addr, java_sender_port):
     if incoming_message != exit_message:
         print(incoming_message)
 
+
         print(other_name, ":", incoming_message)
 
         # Connect to the java socket listening for messages to be displayed
