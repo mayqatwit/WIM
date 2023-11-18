@@ -98,7 +98,7 @@ def handle_client(client, addr):
             name = user[0]
 
     # Accept the message being sent
-    incoming_message = client.accept(2048).decode(ENCODE)
+    incoming_message = client.recv(2048).decode(ENCODE)
     if incoming_message != exit_message:
         # Give the message to the Java GUI
         # java_sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -117,7 +117,7 @@ def handle_client(client, addr):
 def listen_for_users():
     # Wait for new user to send a message
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listener.bind(('', MYPORT))
+    listener.bind((socket.gethostbyname(socket.gethostname()), MYPORT))
     listener.listen(30)
 
     while True:
