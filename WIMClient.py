@@ -95,7 +95,7 @@ def send_message(message):
             send.close()  # Close the socket after sending the message
 
 
-def handle_client(client, addr):
+def handle_client(client, addr, java_sender_port):
     users = request_users()
     print("Handling")
     global name
@@ -127,7 +127,7 @@ def handle_client(client, addr):
     print("Not handling client anymore")
 
 
-def listen_for_users(MYPORT):
+def listen_for_users(MYPORT, java_sender_port):
     # Wait for new user to send a message
     HOST = ''
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -144,7 +144,7 @@ def listen_for_users(MYPORT):
         # client_process = Process(target=handle_client, args=(new_client, addr))
         # print("starting new process")
         # client_process.start()
-        handle_client(new_client, addr)
+        handle_client(new_client, addr, java_sender_port)
         new_client.close()
 
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
         print("Couldn't connect to server")
         exit(0)
 
-    listener_process = Process(target=listen_for_users, args = {MYPORT})
+    listener_process = Process(target=listen_for_users, args = {MYPORT, java_sender_port})
     listener_process.start()
 
 
