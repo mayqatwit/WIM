@@ -82,13 +82,13 @@ def send_message(message):
             print("Message sent to Java GUI\n")
         else:
             # Connect to user socket
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            send = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             print(user[2], user[1])
-            s.connect((user[2], user[1]))
-            s.sendall(message.encode())
-            s.sendall(user[0].encode())
+            send.connect((user[2], user[1]))
+            send.sendall(message.encode())
+            send.sendall(user[0].encode())
             print("Message sent to user")
-            s.close()  # Close the socket after sending the message
+            send.close()  # Close the socket after sending the message
 
 
 def handle_client(client, addr):
