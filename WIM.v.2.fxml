@@ -51,12 +51,12 @@
          <children>
             <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: BLACK; -fx-border-width: 2;">
                <children>
-                  <ImageView fitHeight="72.0" fitWidth="151.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="61.0" fitWidth="129.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/W%20logo.jpg" />
                      </image>
                      <VBox.margin>
-                        <Insets />
+                        <Insets bottom="5.0" left="12.0" top="5.0" />
                      </VBox.margin>
                   </ImageView>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Message on a WIM!" textAlignment="CENTER" wrappingWidth="145.3367404937744">

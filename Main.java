@@ -119,21 +119,12 @@ public class Main extends Application implements Initializable {
 
 						try {
 							// Create a socket to connect to the Python script
-							socket = new Socket("localhost", 12345);
+							socket = new Socket("localhost", Integer.parseInt(arg[0]));
 
 							// Send the user input to the Python script
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 							out.println(message);
-//
-//							// Receive the result from the Python script
-//							BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//							String result = in.readLine();
-//
-//							// Display the message from the Python script
-//							displayText.getChildren()
-//									.add(new Text(String.format("[%s] %s: %s%n", getTime(), name, result)));
 
-							// Close the socket
 							socket.close();
 
 						} catch (IOException e1) {
@@ -151,7 +142,7 @@ public class Main extends Application implements Initializable {
 
 		exitButton.setOnAction((e) -> {
 			try {
-				Socket socket = new Socket("localhost", 12345);
+				Socket socket = new Socket("localhost", Integer.parseInt(arg[0]));
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				out.println("☻♥♦♣♠•◘○◙");
 				socket.close();
@@ -177,6 +168,10 @@ public class Main extends Application implements Initializable {
 
 	public void receiveMessages() throws UnknownHostException, IOException {
 		ServerSocket serverSocket = new ServerSocket( 0 );
+		Socket socket = new Socket("localhost", Integer.parseInt(arg[0]));
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+		out.println(serverSocket.getLocalPort());
+		socket.close();
 
 		while (true) {
 			System.out.println("Wating for new message");
@@ -185,11 +180,10 @@ public class Main extends Application implements Initializable {
 			Socket listen = serverSocket.accept();
 			BufferedReader in = new BufferedReader(new InputStreamReader(listen.getInputStream()));
 			String message = in.readLine();
-			String name = in.readLine();
 
 			// Display the message from the Python script
 	        Platform.runLater(() -> {
-	            displayText.getChildren().add(new Text(String.format("[%s] %s: %s%n", getTime(), name, message)));
+	            displayText.getChildren().add(new Text(String.format("[%s] %s%n", getTime(), message)));
 	        });
 			// Close the socket
 			listen.close();
