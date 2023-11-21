@@ -43,7 +43,7 @@ public class Main extends Application implements Initializable {
 
 	public static String[] arg;
 
-	class MultithreadingDemo extends Thread {
+	class MultiThreading extends Thread {
 	    public void run()
 	    {
 	        try {
@@ -77,8 +77,8 @@ public class Main extends Application implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		MultithreadingDemo object
-        = new MultithreadingDemo();
+		MultiThreading object
+        = new MultiThreading();
     object.start();
 
 		enterName.setOnKeyPressed((e) -> {
@@ -184,6 +184,7 @@ public class Main extends Application implements Initializable {
 			// Display the message from the Python script
 	        Platform.runLater(() -> {
 	            displayText.getChildren().add(new Text(String.format("[%s] %s%n", getTime(), message)));
+	            scrollPane.setVvalue(1D);
 	        });
 			// Close the socket
 			listen.close();
