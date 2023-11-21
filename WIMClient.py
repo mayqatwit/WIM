@@ -51,6 +51,7 @@ def get_name() -> str:
     return found_name
 
 
+# Currently hard-coded to Quentyn's IP address, proxy server will run on his on the local Eduroam network
 def find_addresses(name, my_port) -> list:
     # Connect to the proxy server
     s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
