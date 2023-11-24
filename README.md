@@ -24,3 +24,5 @@ Week of 11/5: Combining the front end with the back end
 Week of 11/12: Debugging and issue squashing
 
 Week of 11/19:  Presentation prep
+
+![WIMSnip1](https://github.com/mayqatwit/WIM/assets/78805341/5e163519-c251-434c-ad55-36db102addd4)
