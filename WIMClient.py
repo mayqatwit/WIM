@@ -7,6 +7,7 @@ global MYPORT
 users = []
 java_sender_port = 0
 
+proxy_IP = '10.220.90.135'
 exit_message = "☻♥♦♣♠•◘○◙"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
@@ -27,7 +28,7 @@ java_args = [
 def request_users():
     # Connect to the proxy server
     s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s1.connect(('10.220.90.135', 12342))
+    s1.connect((proxy_IP, 12342))
 
     # Send request message
     s1.sendall("REQUEST".encode(ENCODE))
@@ -55,7 +56,7 @@ def get_name() -> str:
 def find_addresses(name, my_port) -> list:
     # Connect to the proxy server
     s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s2.connect(('10.220.90.135', 12342))
+    s2.connect((proxy_IP, 12342))
 
     # Send port number and name to proxy server for storage
     s2.sendall(str(my_port).encode(ENCODE))
@@ -152,7 +153,7 @@ def listen_for_users(MYPORT, java_sender_port, screen_name):
 def remove_from_proxy():
     # Connect to the proxy server
     s3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s3.connect(('10.220.90.135', 12342))
+    s3.connect((proxy_IP, 12342))
 
     # Send remove message
     s3.sendall("REMOVE".encode(ENCODE))
