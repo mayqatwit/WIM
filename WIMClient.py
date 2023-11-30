@@ -7,7 +7,7 @@ global MYPORT
 users = []
 java_sender_port = 0
 
-proxy_IP = '10.220.90.135'
+proxy_IP = '10.220.89.187'
 exit_message = "☻♥♦♣♠•◘○◙"
 java_gui_jar_path = "WIM.jar"
 ENCODE = 'utf-8'
